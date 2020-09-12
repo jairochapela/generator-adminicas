@@ -1,0 +1,37 @@
+{% extends "_base.html" %}
+{% block title %}
+<%= modelName %> {{item.id}}
+{% endblock %}
+{% block content %}
+<h1><%= modelName %> {{item.id}}</h1>
+        <form action="/<%= modelName %>/{{item.id}}" method="post">
+            <% for(const field in model) { %>
+            <div class="form-group">
+                <label for="<%= field %>"><%= field %></label>
+    
+                <% if (model[field].foreignKey && model[field].foreignKey.target_table) { %>
+                <select name="<%= field %>" id="<%= field %>" value="{{item.<%= field %>}}" class="custom-select">
+                    {% for opt in <%= model[field].foreignKey.target_table %> %}
+                    <option value="{{item.<%= model[field].foreignKey.target_column %>}}" {% if (item.<%= field %>==opt.<%= model[field].foreignKey.target_column %>) %}selected{% endif %}>{{opt | smart}}</option>
+                    {% endfor %}
+                </select>
+                <% } else if (model[field].type == 'DATETIME') { %>
+                <input type="datetime-local" class="form-control" name="<%= field %>" id="<%= field %>" value="{{item.<%= field %>|dateformat('YYYY-MM-DD HH:mm:ss')}}">
+                <% } else if (model[field].type == 'DATE') { %>
+                <input type="date" class="form-control" name="<%= field %>" id="<%= field %>" value="{{item.<%= field %>|dateformat('YYYY-MM-DD')}}">
+                <% } else if (model[field].type == 'TIME') { %>
+                <input type="time" class="form-control" name="<%= field %>" id="<%= field %>" value="{{item.<%= field %>|dateformat('HH:mm:ss')}}">        
+                <% } else { %>
+                <input type="text" class="form-control" name="<%= field %>" id="<%= field %>" value="{{item.<%= field %>}}">
+                <% } %>
+            </div>
+            <% } %>
+            <div class="form-group">
+                {% if item.id %}
+                <input type="submit" value="Update" class="btn btn-primary">
+                {% else %}
+                <input type="submit" value="Create" class="btn btn-success">
+                {% endif %}
+            </div>
+        </form>
+{% endblock %}

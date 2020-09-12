@@ -2,6 +2,8 @@ require('dotenv').config();
 
 var createError = require('http-errors');
 var express = require('express');
+const nunjucks = require('nunjucks');
+const moment = require('moment');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
@@ -12,7 +14,33 @@ var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'hbs');
+
+var nunjucksEnv = nunjucks.configure('views', {
+  express: app,
+  autoescape: true
+});
+
+// customize nunjucks
+nunjucksEnv.addFilter('smart', function(obj) {
+  if (!obj || !obj.dataValues) return "";
+  for (const key in obj.dataValues) {
+    if (obj.dataValues.hasOwnProperty(key)) {
+      const value = obj.dataValues[key];
+      if (value && typeof value == 'string') return value;      
+    }
+  }
+  return "";
+});
+
+
+nunjucksEnv.addFilter('dateformat', function(date, fmt) {
+  return date? moment(date).format(fmt) : '';
+});
+
+
+app.set('view engine', 'html');
+
+
 
 app.use(logger('dev'));
 app.use(express.json());

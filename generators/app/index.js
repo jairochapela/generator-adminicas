@@ -34,9 +34,11 @@ module.exports = class extends Generator {
                 "express": "~4.16.1",
                 "hbs": "~4.0.4",
                 "http-errors": "~1.6.3",
+                "moment": "^2.27.0",
                 "morgan": "~1.9.1",
                 "mysql2": "^2.1.0",
                 "node-sass-middleware": "0.11.0",
+                "nunjucks": "^3.2.2",
                 "sequelize": "^6.3.5"
               }
           };
@@ -63,10 +65,11 @@ module.exports = class extends Generator {
             port: this.answers.dbport,
             caseModel: 'c', // convert snake_case column names to camelCase field names: user_id -> userId
             // caseFile: 'c', // file names created for each model use camelCase.js not snake_case.js
-            // additional: {
-            //     timestamps: false
-            //     //...
-            // },
+            additional: {
+                //timestamps: false
+
+                //...
+            },
             // tables: ['table1', 'table2', 'myschema.table3'] // use all tables if omitted
             //...
         });
@@ -80,13 +83,15 @@ module.exports = class extends Generator {
                 this.log(model);
 
                 this.fs.copyTpl(this.templatePath('controller.js'), this.destinationPath('routes/'+t+'.js'), {modelName:t, model})
-                this.fs.copyTpl(this.templatePath('list.hbs'), this.destinationPath('views/'+t+'_list.hbs'), {modelName:t, model})
-                this.fs.copyTpl(this.templatePath('detail.hbs'), this.destinationPath('views/'+t+'_detail.hbs'), {modelName:t, model})
+                this.fs.copyTpl(this.templatePath('list.html'), this.destinationPath('views/'+t+'_list.html'), {modelName:t, model})
+                this.fs.copyTpl(this.templatePath('detail.html'), this.destinationPath('views/'+t+'_detail.html'), {modelName:t, model})
             }
         }
 
         this.fs.copyTpl(this.templatePath('app.js'), this.destinationPath('app.js'),{models: auto.tables})
         this.fs.copyTpl(this.templatePath('_db.js'), this.destinationPath('models/_db.js'),{})
+        this.fs.copyTpl(this.templatePath('_base.html'), this.destinationPath('views/_base.html'),{})
+        this.fs.copyTpl(this.templatePath('_menu.html'), this.destinationPath('views/_menu.html'),{})
 
         this.fs.copyTpl(this.templatePath('.env.example'), this.destinationPath('.env.example'), {...Object.assign({...this.answers}, {dbpassword:'xxx'})})
         this.fs.copyTpl(this.templatePath('.env.example'), this.destinationPath('.env'), {...this.answers})
