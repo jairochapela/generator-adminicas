@@ -1,0 +1,23 @@
+{
+  "name": "generator-adminicas",
+  "version": "1.0.0",
+  "description": "",
+  "keywords": [
+    "yeoman-generator"
+  ],
+  "files": [
+    "generators"
+  ],
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mysql2": "^2.1.0",
+    "sequelize": "^6.3.5",
+    "sequelize-auto": "^0.5.4",
+    "yeoman-generator": "^4.12.0"
+  }
+}

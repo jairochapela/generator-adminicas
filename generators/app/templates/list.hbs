@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= modelName %></title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container-fluid">    
+        <table class="table table-striped table-sm">
+            <thead>
+                <tr>
+                    <% for(const field in model) { %>
+                    <th><%= field %></th>
+                    <% } %>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each items}}
+                <tr>
+                    <% for(const field in model) { %>
+                        <td>
+                        <% if (model[field].primaryKey) { %>
+                            <a href="{{this.<%= field %>}}">{{this.<%= field %>}}</a>
+                        <% } else if (model[field].foreignKey && model[field].foreignKey.target_table) { %>
+                            <a href="../<%= model[field].foreignKey.target_table %>/{{this.<%= field %>}}">{{this.<%= field %>}}</a>
+                        <% } else { %>
+                            {{this.<%= field %>}}
+                        <% } %>
+                        </td>
+                    <% } %>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>  
+    </div>  
+</body>
+</html>
