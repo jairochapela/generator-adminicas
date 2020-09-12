@@ -16,8 +16,20 @@ router.get('/', async function(req, res, next) {
 });
 
 router.post('/', async function(req, res, next) {
-    const item = await $model.create(req.body);
-    res.redirect('');
+    try {
+        const item = await $model.create(req.body);
+        res.redirect('/');
+    } catch(err) {
+        res.render('<%= modelName %>_detail', {
+            <% for (let field in model) { %>
+                <% if (model[field].foreignKey && model[field].foreignKey.target_table) { %>
+                    <%= model[field].foreignKey.target_table %>: await $<%= model[field].foreignKey.target_table %>.findAll(),
+                <% } %>
+            <% } %>        
+            item: req.body,
+            error: err.message
+        });
+    }
 });
 
 router.get('/_new', async function(req, res, next) {
@@ -44,9 +56,21 @@ router.get('/:id', async function(req, res, next) {
 });
 
 router.post('/:id', async function(req, res, next) {
-    let item = await $model.findByPk(req.params.id);
-    await item.update(req.body);
-    res.redirect('');
+    try {
+        let item = await $model.findByPk(req.params.id);
+        await item.update(req.body);
+        res.redirect('/');
+    } catch(err) {
+        res.render('<%= modelName %>_detail', {
+            <% for (let field in model) { %>
+                <% if (model[field].foreignKey && model[field].foreignKey.target_table) { %>
+                    <%= model[field].foreignKey.target_table %>: await $<%= model[field].foreignKey.target_table %>.findAll(),
+                <% } %>
+            <% } %>        
+            item: req.body,
+            error: err.message
+        });
+    }
 });
 
 module.exports = router;

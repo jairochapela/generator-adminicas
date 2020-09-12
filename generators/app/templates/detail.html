@@ -4,50 +4,60 @@
 {% endblock %}
 {% block content %}
 <h1 class="entity"><%= modelName %> {{item.id}}</h1>
-        <form action="/<%= modelName %>/{{item.id}}" method="post">
-            <% for(const field in model) { %>
-            <% if (field == 'createdAt' || field == 'updatedAt') continue; %>
+{% if (error) %}
+<div class="alert alert-danger">
+    {{error}}    
+</div>
+{% endif %}
 
-            <div class="form-group">
-                <% if (!model[field].primaryKey || model[field].foreignKey.target_table) { %>
-                <label for="<%= field %>"><%= field %></label>
-                <% } %>
-    
-                <% if (model[field].foreignKey && model[field].foreignKey.target_table) { %>
-                <select name="<%= field %>" id="<%= field %>" value="{{item.<%= field %>}}" class="custom-select">
-                    {% for opt in <%= model[field].foreignKey.target_table %> %}
-                    <option value="{{opt.<%= model[field].foreignKey.target_column %>}}" {% if (item.<%= field %>==opt.<%= model[field].foreignKey.target_column %>) %}selected{% endif %}>{{opt | smart}}</option>
-                    {% endfor %}
-                </select>
-                <% } else if (model[field].primaryKey) { %>
-                    {% if item.<%= field %> %}
-                    <input type="hidden" name="<%= field %>" value="{{item.<%= field %>}}">
-                    {% endif %}
-                <% } else if (model[field].type == 'DATETIME') { %>
-                <input type="datetime-local" class="form-control" name="<%= field %>" id="<%= field %>" value="{{item.<%= field %>|dateformat('YYYY-MM-DD HH:mm:ss')}}">
-                <% } else if (model[field].type == 'DATE') { %>
-                <input type="date" class="form-control" name="<%= field %>" id="<%= field %>" value="{{item.<%= field %>|dateformat('YYYY-MM-DD')}}">
-                <% } else if (model[field].type == 'TIME') { %>
-                <input type="time" class="form-control" name="<%= field %>" id="<%= field %>" value="{{item.<%= field %>|dateformat('HH:mm:ss')}}">        
-                <% } else if (model[field].type.startsWith('ENUM')) { %>
-                    <% let opts = [...model[field].type.matchAll(/'([^']+)'/g)] %>
-                    <% for (let i in opts) { %>
-                        <input type="radio" name="<%= field %>" id="<%= field %>-<%= i %>" value="<%= opts[i][1] %>" {% if (item.<%= field %>=='<%= opts[i][1] %>') %}checked{% endif %}>
-                        <label for="<%= field %>-<%= i %>"><%= opts[i][1] %></label>
-                    <% } %>
-                <% } else if (model[field].type.startsWith('INT')) { %>
-                <input type="number" class="form-control" name="<%= field %>" id="<%= field %>" value="{{item.<%= field %>}}">
-                <% } else { %>
-                <input type="text" class="form-control" name="<%= field %>" id="<%= field %>" value="{{item.<%= field %>}}">
-                <% } %>
-            </div>
+<form action="/<%= modelName %>/{{item.id}}" method="post" class="{% if (error) %}was-validated{% endif %}">
+    <% for(const field in model) { %>
+    <% if (field == 'createdAt' || field == 'updatedAt') continue; %>
+
+    <% let required = (model[field].allowNull? '' : 'required'); %>
+
+    <div class="form-group">
+        <% if (!model[field].primaryKey || model[field].foreignKey.target_table) { %>
+        <label for="<%= field %>"><%= field %></label>
+        <% } %>
+
+        <% if (model[field].foreignKey && model[field].foreignKey.target_table) { %>
+        <select name="<%= field %>" id="<%= field %>" value="{{item.<%= field %>}}" class="custom-select" <%= required %>>
+            {% for opt in <%= model[field].foreignKey.target_table %> %}
+            <option value="{{opt.<%= model[field].foreignKey.target_column %>}}" {% if (item.<%= field %>==opt.<%= model[field].foreignKey.target_column %>) %}selected{% endif %}>{{opt | smart}}</option>
+            {% endfor %}
+        </select>
+        <% } else if (model[field].primaryKey) { %>
+            {% if item.<%= field %> %}
+            <input type="hidden" name="<%= field %>" value="{{item.<%= field %>}}">
+            {% endif %}
+        <% } else if (model[field].type == 'DATETIME') { %>
+        <input type="datetime-local" class="form-control" name="<%= field %>" id="<%= field %>" value="{{item.<%= field %>|dateformat('YYYY-MM-DD HH:mm:ss')}}" <%= required %>>
+        <% } else if (model[field].type == 'DATE') { %>
+        <input type="date" class="form-control" name="<%= field %>" id="<%= field %>" value="{{item.<%= field %>|dateformat('YYYY-MM-DD')}}" <%= required %>>
+        <% } else if (model[field].type == 'TIME') { %>
+        <input type="time" class="form-control" name="<%= field %>" id="<%= field %>" value="{{item.<%= field %>|dateformat('HH:mm:ss')}}" <%= required %>>        
+        <% } else if (model[field].type.startsWith('ENUM')) { %>
+            <% let opts = [...model[field].type.matchAll(/'([^']+)'/g)] %>
+            <% for (let i in opts) { %>
+                <input type="radio" name="<%= field %>" id="<%= field %>-<%= i %>" value="<%= opts[i][1] %>" {% if (item.<%= field %>=='<%= opts[i][1] %>') %}checked{% endif %} <%= required %>>
+                <label for="<%= field %>-<%= i %>"><%= opts[i][1] %></label>
             <% } %>
-            <div class="form-group">
-                {% if item.id %}
-                <input type="submit" value="Update" class="btn btn-primary">
-                {% else %}
-                <input type="submit" value="Create" class="btn btn-success">
-                {% endif %}
-            </div>
-        </form>
+        <% } else if (model[field].type.startsWith('INT')) { %>
+        <input type="number" class="form-control" name="<%= field %>" id="<%= field %>" value="{{item.<%= field %>}}" step=1 <%= required %>>
+        <% } else if (model[field].type.startsWith('DECIMAL') || model[field].type=='FLOAT' || model[field].type=='DOUBLE') { %>
+        <input type="number" class="form-control" name="<%= field %>" id="<%= field %>" value="{{item.<%= field %>}}" step="any" <%= required %>>
+        <% } else { %>
+        <input type="text" class="form-control" name="<%= field %>" id="<%= field %>" value="{{item.<%= field %>}}" <%= required %>>
+        <% } %>
+    </div>
+    <% } %>
+    <div class="form-group">
+        {% if item.id %}
+        <input type="submit" value="Update" class="btn btn-primary">
+        {% else %}
+        <input type="submit" value="Create" class="btn btn-success">
+        {% endif %}
+    </div>
+</form>
 {% endblock %}
