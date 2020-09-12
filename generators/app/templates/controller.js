@@ -21,7 +21,14 @@ router.post('/', async function(req, res, next) {
 });
 
 router.get('/_new', async function(req, res, next) {
-    res.render('<%= modelName %>_detail', {item:{}});
+    res.render('<%= modelName %>_detail', {
+        <% for (let field in model) { %>
+            <% if (model[field].foreignKey && model[field].foreignKey.target_table) { %>
+                <%= model[field].foreignKey.target_table %>: await $<%= model[field].foreignKey.target_table %>.findAll(),
+            <% } %>
+        <% } %>        
+        item:{}
+    });
 });
 
 router.get('/:id', async function(req, res, next) {
