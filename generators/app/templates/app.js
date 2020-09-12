@@ -27,9 +27,9 @@ app.use(sassMiddleware({
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-<% for (const t in models) { %>
-  app.use('/<%= t %>', require(path.join(__dirname, 'routes', '<%= t %>')));  
-<% } %>
+//--- <% for (const t in models) { %>
+app.use('/<%= t %>', require(path.join(__dirname, 'routes', '<%= t %>')));  
+//--- <% } %>
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
