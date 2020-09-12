@@ -91,7 +91,8 @@ module.exports = class extends Generator {
         this.fs.copyTpl(this.templatePath('app.js'), this.destinationPath('app.js'),{models: auto.tables})
         this.fs.copyTpl(this.templatePath('_db.js'), this.destinationPath('models/_db.js'),{})
         this.fs.copyTpl(this.templatePath('_base.html'), this.destinationPath('views/_base.html'),{})
-        this.fs.copyTpl(this.templatePath('_menu.html'), this.destinationPath('views/_menu.html'),{})
+        this.fs.copyTpl(this.templatePath('_menu.html'), this.destinationPath('views/_menu.html'),{appname: this.answers.name, models: auto.tables})
+        this.fs.copyTpl(this.templatePath('_dashboard.html'), this.destinationPath('views/_dashboard.html'),{appname: this.answers.name, models: auto.tables})
 
         this.fs.copyTpl(this.templatePath('.env.example'), this.destinationPath('.env.example'), {...Object.assign({...this.answers}, {dbpassword:'xxx'})})
         this.fs.copyTpl(this.templatePath('.env.example'), this.destinationPath('.env'), {...this.answers})

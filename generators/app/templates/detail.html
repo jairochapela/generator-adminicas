@@ -3,7 +3,7 @@
 <%= modelName %> {{item.id}}
 {% endblock %}
 {% block content %}
-<h1><%= modelName %> {{item.id}}</h1>
+<h1 class="entity"><%= modelName %> {{item.id}}</h1>
         <form action="/<%= modelName %>/{{item.id}}" method="post">
             <% for(const field in model) { %>
             <div class="form-group">

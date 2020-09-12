@@ -16,10 +16,16 @@
                 <tr>
                     <% for(const field in model) { %>
                         <td>
-                        <% if (model[field].primaryKey) { %>
-                            <a href="/<%= modelName %>/{{item.<%= field %>}}">{{item.<%= field %>}}</a>
-                        <% } else if (model[field].foreignKey && model[field].foreignKey.target_table) { %>
+                        <% if (model[field].foreignKey && model[field].foreignKey.target_table) { %>
                             <a href="../<%= model[field].foreignKey.target_table %>/{{item.<%= field %>}}">{{item.<%= field %>}}</a>
+                        <% } else if (model[field].primaryKey) { %>
+                            <a href="/<%= modelName %>/{{item.<%= field %>}}">{{item.<%= field %>}}</a>                            
+                        <% } else if (model[field].type == 'DATETIME') { %>
+                            {{item.<%= field %>|dateformat('YYYY-MM-DD HH:mm:ss')}}
+                        <% } else if (model[field].type == 'DATE') { %>
+                            {{item.<%= field %>|dateformat('YYYY-MM-DD')}}
+                        <% } else if (model[field].type == 'TIME') { %>
+                            {{item.<%= field %>|dateformat('HH:mm:ss')}}
                         <% } else { %>
                             {{item.<%= field %>}}
                         <% } %>

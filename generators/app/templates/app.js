@@ -9,6 +9,11 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var sassMiddleware = require('node-sass-middleware');
 
+var {DataTypes} = require('sequelize');
+var sequelize = require(path.join(__dirname, 'models', '_db'));
+<% for (const t in models) { %>
+var $<%= t %> = require(path.join(__dirname, 'models', '<%= t %>'))(sequelize, DataTypes);
+<% } %>
 
 var app = express();
 
@@ -55,9 +60,17 @@ app.use(sassMiddleware({
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-//--- <% for (const t in models) { %>
+app.get('/', async (req, res, next) => {
+  res.render('_dashboard', {
+    <% for (const t in models) { %>
+      <%= t %>: await $<%= t %>.count(),
+    <% } %>  
+  })
+})
+
+<% for (const t in models) { %>
 app.use('/<%= t %>', require(path.join(__dirname, 'routes', '<%= t %>')));  
-//--- <% } %>
+<% } %>
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
