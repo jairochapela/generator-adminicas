@@ -1,17 +1,12 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="#"><%= appname %></a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-  
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav mr-auto">
-
-        <% for (const t in models) { %>
-        <li class="nav-item">
-            <a class="nav-link entity" href="/<%= t %>/"><%= t %></a>
-        </li>
-        <% } %>
-      </ul>
-    </div>
-</nav>
+<ul class="nav flex-column">
+  <% for (const t in models) { %>
+  <li class="nav-item">
+    <a class="nav-link" href="/<%= t %>/">
+      <svg class="bi" width="16" height="16" fill="currentColor">
+        <use xlink:href="/img/bootstrap-icons.svg#diamond-fill"/>
+      </svg>
+      <span class="entity"><%= t %></span>
+    </a>
+  </li>
+  <% } %>
+</ul>

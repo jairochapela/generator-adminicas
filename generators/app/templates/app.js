@@ -72,6 +72,10 @@ app.get('/', async (req, res, next) => {
 app.use('/<%= t %>', require(path.join(__dirname, 'routes', '<%= t %>')));  
 <% } %>
 
+
+// static assets
+app.use(express.static('public'));
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
